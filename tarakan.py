@@ -28,12 +28,12 @@ class App(tk.Tk):
         self.create_bugs()
 
     def create_bugs(self):
+        colors = ("white", "lightgrey", "red", "green", "blue", "cyan", "yellow", "magenta")
+        names = ('Гоша', 'Гриша', 'Саша', 'Миша', 'Федя', 'Фруня', 'Хрюня', 'Паша')
         if self.list_bugs:
             for bug in self.list_bugs:
                 self.canv.delete(bug.idc, bug.txt)
         self.list_bugs.clear()
-        colors = ("white", "lightgrey", "red", "green", "blue", "cyan", "yellow", "magenta")
-        names = ('Гоша', 'Гриша', 'Саша', 'Миша', 'Федя', 'Фруня', 'Хрюня', 'Паша')
         for i in range(8):
             self.list_bugs.append(Bug(self.canv, names[i], False, colors[i], self.finish, i))
 
@@ -51,7 +51,6 @@ class App(tk.Tk):
             for bug in self.list_bugs:
                 bug.update()
                 n.add(bug.fin_flag)
-            print(n)
             self.canv.after(20, lambda: self.move(n))
         else:
             vremya = []
@@ -59,8 +58,8 @@ class App(tk.Tk):
             for bug in self.list_bugs:
                 s += "%s: время = %d\n" % (bug.name, bug.n)
                 vremya.append(bug.n)
-            victory = 'Подедитель: {0:s}'.format(self.list_bugs[vremya.index(min(vremya))].name)
-            showinfo('Финиш', 'Заезд окончен\n' + s + '\n' + victory)
+            victory = 'Победитель: {0:s}!'.format(self.list_bugs[vremya.index(min(vremya))].name)
+            showinfo('Финиш', 'Забег окончен!\n' + s + '\n' + victory)
             self.run_flag = False
             self.create_bugs()
 
@@ -69,8 +68,12 @@ class App(tk.Tk):
             showinfo('Извините', 'Гонка уже началась!')
             return
         self.create_bugs()
+        self.choice_bugs()
         n = set()
         self.move(n)
+
+    def choice_bugs(self):
+        pass
 
 
 class Bug:
