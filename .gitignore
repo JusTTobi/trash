@@ -60,4 +60,4 @@ venv.bak/
 .ropeproject
 /site
 .mypy_cache/
-Будет удалено .idea/
+.idea/
