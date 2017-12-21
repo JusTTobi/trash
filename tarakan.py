@@ -24,7 +24,7 @@ class App(tk.Tk):
         self.run_flag = False
         self.wight = 1000
         self.finish = self.wight - 50
-        self.canv = Doroga(self, width=self.wight, height=470, bg="grey20", finish=self.finish)
+        self.canv = Doroga(self, width=self.wight, height=470, bg="grey30", finish=self.finish)
         self.canv.pack()
         self.list_bugs = []
         self.tstep = 10
@@ -58,20 +58,11 @@ class App(tk.Tk):
             self.dofinish()
 
     def dofinish(self):
-        vremya = []
-        names = []
-        flags = []
-        s = ''
-        for bug in self.list_bugs:
-            vremya.append(bug.n * self.tstep / 1000)
-            names.append(bug.name)
-            flags.append(bug.mycar)
-        vremya_sort = vremya[:]
-        vremya_sort.sort()
-        for t in vremya_sort:
-            s += "%s: время = %.2f c\n" % (names[vremya.index(t)], t)
-        victory = '\nПоздравляем!!!' if flags[
-                                            vremya.index(vremya_sort[0])] is True else '\nПовезёт в следующий раз!'
+        s=''
+        self.list_bugs.sort(key=lambda x: x.n)
+        for i, bug in enumerate(self.list_bugs):
+            s += "%d) %s: время = %.2f c\n" % (i+1, bug.name, bug.n * self.tstep / 1000)
+        victory = '\nПоздравляем!!!' if self.list_bugs[0].mycar is True else '\nПовезёт в следующий раз!'
         showinfo('Финиш', 'Забег окончен!\n\n' + 'Результаты:\n' + s + victory)
         self.run_flag = False
         self.create_bugs()
