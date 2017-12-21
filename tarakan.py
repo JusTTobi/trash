@@ -17,14 +17,15 @@ class App(tk.Tk):
         menu = tk.Menu(self)
         self.config(menu=menu)
         first_menu = tk.Menu(self)
-        menu.add_cascade(label="Игра", menu=first_menu)
-        first_menu.add_command(label="Старт", command=self.start)
-        first_menu.add_command(label="Выход", command=self.close_win)
-        menu.add_command(label="Справка", command=self.about)
+        menu.add_cascade(label='Игра', menu=first_menu)
+        first_menu.add_command(label='Старт', command=self.start)
+        first_menu.add_command(label='Выход', command=self.close_win)
+        menu.add_command(label='Справка', command=self.about)
         self.run_flag = False
         self.wight = 1000
         self.finish = self.wight - 50
-        self.canv = Doroga(self, width=self.wight, height=470, bg="grey30", finish=self.finish)
+        self.canv = Doroga(self, width=self.wight, height=470,
+                           bg='grey30', finish=self.finish)
         self.canv.pack()
         self.list_bugs = []
         self.tstep = 10
@@ -35,10 +36,11 @@ class App(tk.Tk):
             for bug in self.list_bugs:
                 self.canv.delete(bug.idc, bug.txt)
         self.list_bugs.clear()
-        colors = ("white", "lightgrey", "red", "green", "blue", "cyan", "yellow", "magenta")
+        colors = ('white', 'lightgrey', 'red', 'green', 'blue', 'cyan', 'yellow', 'magenta')
         names = ('Гоша', 'Гриша', 'Саша', 'Миша', 'Федя', 'Фруня', 'Хрюня', 'Паша')
         for i in range(8):
-            self.list_bugs.append(Bug(self.canv, names[i], False, colors[i], self.finish, i))
+            self.list_bugs.append(
+                Bug(self.canv, names[i], False, colors[i], self.finish, i))
 
     @staticmethod
     def about():
@@ -58,10 +60,10 @@ class App(tk.Tk):
             self.dofinish()
 
     def dofinish(self):
-        s=''
+        s = ''
         self.list_bugs.sort(key=lambda x: x.n)
         for i, bug in enumerate(self.list_bugs):
-            s += "%d) %s: время = %.2f c\n" % (i+1, bug.name, bug.n * self.tstep / 1000)
+            s += '%d) %s: время = %.2f c\n' % (i + 1, bug.name, bug.n * self.tstep / 1000)
         victory = '\nПоздравляем!!!' if self.list_bugs[0].mycar is True else '\nПовезёт в следующий раз!'
         showinfo('Финиш', 'Забег окончен!\n\n' + 'Результаты:\n' + s + victory)
         self.run_flag = False
@@ -84,7 +86,7 @@ class App(tk.Tk):
 
     def choice_bugs(self):
         self.win = tk.Toplevel(self)
-        self.win.title("Выбор таракана:")
+        self.win.title('Выбор таракана:')
         self.win.minsize(width=220, height=150)
         self.win.resizable(False, False)
         self.win.protocol('WM_DELETE_WINDOW', self.rechoice)
