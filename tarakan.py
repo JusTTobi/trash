@@ -7,9 +7,19 @@ from tkinter.messagebox import askyesno
 from tkinter.messagebox import showinfo
 
 
+class Doroga(tk.Canvas):
+    def __init__(self, root, width, height, bg, finish):
+        super().__init__(root, width=width, height=height, bg=bg)
+        self.create_line(0, height/2, width, height/2, dash=(20,), fill='white', width=4)
+        self.create_line(finish, 0, finish, height, dash=(10,), fill='red', width=4)
+        self.create_text(finish + 10, height // 2, font=('Helvetica', '20', 'bold'), text='ФИНИШ', anchor=tk.S,
+                         angle=-90, fill='red')
+
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.choice_flag = False
         self.title('Таракан-1')
         self.resizable(False, False)
         self.protocol('WM_DELETE_WINDOW', self.close_win)
@@ -23,18 +33,19 @@ class App(tk.Tk):
         self.run_flag = False
         self.wight = 1000
         self.finish = self.wight - 50
-        self.canv = tk.Canvas(self, width=self.wight, height=470, bg="grey")
+        self.canv = Doroga(self, width=self.wight, height=470, bg="grey20", finish=self.finish)
         self.canv.pack()
         self.list_bugs = []
+        self.tstep = 10
         self.create_bugs()
 
     def create_bugs(self):
-        colors = ("white", "lightgrey", "red", "green", "blue", "cyan", "yellow", "magenta")
-        names = ('Гоша', 'Гриша', 'Саша', 'Миша', 'Федя', 'Фруня', 'Хрюня', 'Паша')
         if self.list_bugs:
             for bug in self.list_bugs:
                 self.canv.delete(bug.idc, bug.txt)
         self.list_bugs.clear()
+        colors = ("white", "lightgrey", "red", "green", "blue", "cyan", "yellow", "magenta")
+        names = ('Гоша', 'Гриша', 'Саша', 'Миша', 'Федя', 'Фруня', 'Хрюня', 'Паша')
         for i in range(8):
             self.list_bugs.append(Bug(self.canv, names[i], False, colors[i], self.finish, i))
 
@@ -48,14 +59,12 @@ class App(tk.Tk):
 
     def move(self, n):
         if len(n) < len(self.list_bugs) + 1:
-            self.run_flag = True
             for bug in self.list_bugs:
                 bug.update()
                 n.add(bug.fin_flag)
-            self.canv.after(20, lambda: self.move(n))
+            self.canv.after(self.tstep, lambda: self.move(n))
         else:
             self.dofinish()
-
 
     def dofinish(self):
         vremya = []
@@ -63,24 +72,25 @@ class App(tk.Tk):
         flags = []
         s = ''
         for bug in self.list_bugs:
-            vremya.append(bug.n)
+            vremya.append(bug.n*self.tstep/1000)
             names.append(bug.name)
             flags.append(bug.mycar)
         vremya_sort = vremya[:]
         vremya_sort.sort()
         for t in vremya_sort:
-            s += "%s: время = %3d\n" % (names[vremya.index(t)], t)
+            s += "%s: время = %.2f c\n" % (names[vremya.index(t)], t)
         victory = '\nПоздравляем!!!' if flags[
-                                            vremya.index(vremya_sort[0])] == True else '\nПовезёт в следующий раз!'
+                                            vremya.index(vremya_sort[0])] is True else '\nПовезёт в следующий раз!'
         showinfo('Финиш', 'Забег окончен!\n\n' + 'Результаты:\n' + s + victory)
         self.run_flag = False
         self.create_bugs()
-
 
     def start(self):
         if self.run_flag is True:
             showinfo('Извините', 'Гонка уже началась!')
             return
+        self.choice_flag = False
+        self.run_flag = True
         self.choice_bugs()
         while True:
             if self.choice_flag is True:
@@ -98,12 +108,11 @@ class App(tk.Tk):
         self.win.protocol('WM_DELETE_WINDOW', self.rechoice)
         fra = tk.Frame(self.win)
         fra.pack()
-        self.choice_flag = False
         nrows = 4
         btns = []
         for bug in self.list_bugs:
             btns.append(tk.Button(fra, text=bug.name, bg=bug.color,
-                                  command=lambda bug=bug: self.choice(bug), width=3))
+                                  command=lambda bugl=bug: self.choice(bugl), width=3))
         for i, btn in enumerate(btns):
             btn.grid(row=i % nrows, column=i // nrows, pady=5, padx=10)
 
@@ -153,9 +162,9 @@ class Bug:
         self.mycar = True
         self.canv.delete(self.idc, self.txt)
         self.idc = self.canv.create_rectangle(self.x, self.y, self.x + self.size_x, self.y + self.size_y,
-                                              fill=self.color, width=5)
+                                              fill=self.color, width=3)
         self.txt = self.canv.create_text(self.x + self.size_x / 2, self.y + self.size_y / 2, text=self.name,
-                                         anchor=tk.CENTER)
+                                         anchor=tk.CENTER, font=('bold',))
 
 
 app = App()
