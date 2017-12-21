@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import random
+import time
 import tkinter as tk
 from tkinter.messagebox import askyesno
 from tkinter.messagebox import showinfo
@@ -53,27 +54,68 @@ class App(tk.Tk):
                 n.add(bug.fin_flag)
             self.canv.after(20, lambda: self.move(n))
         else:
-            vremya = []
-            s = ''
-            for bug in self.list_bugs:
-                s += "%s: время = %d\n" % (bug.name, bug.n)
-                vremya.append(bug.n)
-            victory = 'Победитель: {0:s}!'.format(self.list_bugs[vremya.index(min(vremya))].name)
-            showinfo('Финиш', 'Забег окончен!\n' + s + '\n' + victory)
-            self.run_flag = False
-            self.create_bugs()
+            self.dofinish()
+
+
+    def dofinish(self):
+        vremya = []
+        names = []
+        flags = []
+        s = ''
+        for bug in self.list_bugs:
+            vremya.append(bug.n)
+            names.append(bug.name)
+            flags.append(bug.mycar)
+        vremya_sort = vremya[:]
+        vremya_sort.sort()
+        for t in vremya_sort:
+            s += "%s: время = %3d\n" % (names[vremya.index(t)], t)
+        victory = '\nПоздравляем!!!' if flags[
+                                            vremya.index(vremya_sort[0])] == True else '\nПовезёт в следующий раз!'
+        showinfo('Финиш', 'Забег окончен!\n\n' + 'Результаты:\n' + s + victory)
+        self.run_flag = False
+        self.create_bugs()
+
 
     def start(self):
         if self.run_flag is True:
             showinfo('Извините', 'Гонка уже началась!')
             return
-        self.create_bugs()
         self.choice_bugs()
+        while True:
+            if self.choice_flag is True:
+                break
+            time.sleep(0.1)
+            self.canv.update()
         n = set()
         self.move(n)
 
     def choice_bugs(self):
-        pass
+        self.win = tk.Toplevel(self)
+        self.win.title("Выбор таракана:")
+        self.win.minsize(width=220, height=150)
+        self.win.resizable(False, False)
+        self.win.protocol('WM_DELETE_WINDOW', self.rechoice)
+        fra = tk.Frame(self.win)
+        fra.pack()
+        self.choice_flag = False
+        nrows = 4
+        btns = []
+        for bug in self.list_bugs:
+            btns.append(tk.Button(fra, text=bug.name, bg=bug.color,
+                                  command=lambda bug=bug: self.choice(bug), width=3))
+        for i, btn in enumerate(btns):
+            btn.grid(row=i % nrows, column=i // nrows, pady=5, padx=10)
+
+    def choice(self, bug):
+        self.win.destroy()
+        self.choice_flag = True
+        bug.choice()
+
+    def rechoice(self):
+        self.win.destroy()
+        showinfo('Так нечестно!', 'Пожалуйста, выберите таракана!')
+        self.choice_bugs()
 
 
 class Bug:
@@ -106,6 +148,14 @@ class Bug:
             self.canv.update()
         else:
             self.fin_flag = self.color
+
+    def choice(self):
+        self.mycar = True
+        self.canv.delete(self.idc, self.txt)
+        self.idc = self.canv.create_rectangle(self.x, self.y, self.x + self.size_x, self.y + self.size_y,
+                                              fill=self.color, width=5)
+        self.txt = self.canv.create_text(self.x + self.size_x / 2, self.y + self.size_y / 2, text=self.name,
+                                         anchor=tk.CENTER)
 
 
 app = App()
