@@ -7,15 +7,6 @@ from tkinter.messagebox import askyesno
 from tkinter.messagebox import showinfo
 
 
-class Doroga(tk.Canvas):
-    def __init__(self, root, width, height, bg, finish):
-        super().__init__(root, width=width, height=height, bg=bg)
-        self.create_line(0, height/2, width, height/2, dash=(20,), fill='white', width=4)
-        self.create_line(finish, 0, finish, height, dash=(10,), fill='red', width=4)
-        self.create_text(finish + 10, height // 2, font=('Helvetica', '20', 'bold'), text='ФИНИШ', anchor=tk.S,
-                         angle=-90, fill='red')
-
-
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -72,7 +63,7 @@ class App(tk.Tk):
         flags = []
         s = ''
         for bug in self.list_bugs:
-            vremya.append(bug.n*self.tstep/1000)
+            vremya.append(bug.n * self.tstep / 1000)
             names.append(bug.name)
             flags.append(bug.mycar)
         vremya_sort = vremya[:]
@@ -165,6 +156,15 @@ class Bug:
                                               fill=self.color, width=3)
         self.txt = self.canv.create_text(self.x + self.size_x / 2, self.y + self.size_y / 2, text=self.name,
                                          anchor=tk.CENTER, font=('bold',))
+
+
+class Doroga(tk.Canvas):
+    def __init__(self, root, width, height, bg, finish):
+        super().__init__(root, width=width, height=height, bg=bg)
+        self.create_line(0, height / 2, width, height / 2, dash=(20,), fill='white', width=4)
+        self.create_line(finish, 0, finish, height, dash=(10,), fill='red', width=4)
+        self.create_text(finish + 10, height // 2, font=('Helvetica', '20', 'bold'), text='ФИНИШ', anchor=tk.S,
+                         angle=-90, fill='red')
 
 
 app = App()
