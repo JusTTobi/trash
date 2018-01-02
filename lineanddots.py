@@ -38,10 +38,10 @@ class App(tk.Tk):
     def add_point(self):
         self.win = tk.Toplevel(self)
         self.win.title('Задайте координаты точки')
-        self.win.minsize(width=50, height=50)
+        self.win.minsize(width=270, height=50)
         self.win.resizable(False, False)
-        lab_x = tk.Label(self.win, text='X-координата (0-500) ')
-        lab_y = tk.Label(self.win, text='Y-координата (0-500) ')
+        lab_x = tk.Label(self.win, text='X-координата (0-{0:d})'.format(self.width))
+        lab_y = tk.Label(self.win, text='Y-координата (0-{0:d})'.format(self.height))
         self.ent_x = tk.Entry(self.win, width=10, bd=3)
         self.ent_y = tk.Entry(self.win, width=10, bd=3)
         but_cancel = tk.Button(self.win, text='Отмена', command=self.win.destroy)
@@ -57,11 +57,11 @@ class App(tk.Tk):
         try:
             x = int(self.ent_x.get())
             y = int(self.ent_y.get())
-            if x < 0 or x > 500 or y < 0 or y > 500:
+            if x < 0 or x > self.width or y < 0 or y > self.height:
                 raise ValueError
         except ValueError:
             showerror('Ошибка!',
-                      'Координаты должны быть целыми числами\nи находится в диапазоне 0-500')
+                      'Координаты должны быть целыми числами\nи находится в заданном диапазоне')
             self.win.destroy()
         else:
             id_point = self.canv.create_oval(x - 2, y - 2, x + 2, y + 2, fill='green')
