@@ -60,8 +60,8 @@ def del_point(e=None):
 
 def clear_all():
     if point_list:
-        for x, y, id in point_list:
-            canv.delete(id)
+        for x, y, id_point in point_list:
+            canv.delete(id_point)
         point_list.clear()
 
 
