@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 
 import tkinter as tk
+import tkinter.ttk as ttk
 from tkinter.messagebox import askyesno
 from tkinter.messagebox import showerror
+from tkinter.messagebox import showinfo
 
 
 def close_win():
@@ -13,15 +15,15 @@ def close_win():
 def add_point():
     win = tk.Toplevel(root)
     win.title('Задайте координаты точки')
-    win.minsize(width=270, height=50)
+    win.minsize(width=300, height=50)
     win.resizable(False, False)
-    lab_x = tk.Label(win, text='X-координата (0-{0:d})'.format(width))
-    lab_y = tk.Label(win, text='Y-координата (0-{0:d})'.format(height))
-    ent_x = tk.Entry(win, width=10, bd=3)
-    ent_y = tk.Entry(win, width=10, bd=3)
-    but_cancel = tk.Button(win, text='Отмена', command=win.destroy)
-    but_ok = tk.Button(win, text='ОK',
-                       command=lambda: _add_point(ent_x=ent_x, ent_y=ent_y, win=win))
+    lab_x = ttk.Label(win, text='X-координата (0-{0:d})'.format(width))
+    lab_y = ttk.Label(win, text='Y-координата (0-{0:d})'.format(height))
+    ent_x = ttk.Entry(win, width=10)
+    ent_y = ttk.Entry(win, width=10)
+    but_cancel = ttk.Button(win, text='Отмена', command=win.destroy)
+    but_ok = ttk.Button(win, text='ОK',
+                        command=lambda: _add_point(ent_x=ent_x, ent_y=ent_y, win=win))
     lab_x.grid(row=0, column=0, pady=5, padx=5)
     lab_y.grid(row=1, column=0, pady=5, padx=5)
     ent_x.grid(row=0, column=1, pady=5, padx=5)
@@ -50,7 +52,7 @@ def _add_point(e=None, *, ent_x=None, ent_y=None, win=None):
     point_list.append((x, y, id_point))
 
 
-def del_point():
+def del_point(e=None):
     if point_list:
         last_point = point_list.pop()
         canv.delete(last_point[2])
@@ -63,13 +65,24 @@ def clear_all():
         point_list.clear()
 
 
+def no_cross_check(p1l1, p2l1, p1l2, p2l2):
+    if ((p2l1[1] - p1l1[1]) / (p2l1[0] - p1l1[0])) == ((p2l2[1] - p1l2[1]) / (p2l2[0] - p1l2[0])):
+        return True
+
+
 def lines_add():
+    if flag_list:
+        showinfo('Внимание!', 'Прямые строятся!')
+        return
     if len(point_list) < 4:
         return
-
     lines_del()
     rms_lines = []
+    flag_list.append(True)
+    pb['maximum'] = len(point_list)
+    n = 0
     for p1l1 in point_list:
+        root.update()
         for p2l1 in point_list:
             if p1l1 == p2l1:
                 break
@@ -79,30 +92,40 @@ def lines_add():
                 for p2l2 in point_list:
                     if p1l1 == p2l2 or p2l1 == p2l2 or p1l2 == p2l2:
                         break
-                    if ((p2l1[1] - p1l1[1]) / (p2l1[0] - p1l1[0])) == ((p2l2[1] - p1l2[1]) / (p2l2[0] - p1l2[0])):
+                    if p1l1[0] == p2l1[0] or p1l2[0] == p2l2[0]:
+                        break
+                    if no_cross_check(p1l1, p2l1, p1l2, p2l2):
                         break
                     i, j, k, l = 0, 0, 0, 0
                     for point in point_list:
                         if point[1] > line_eqy(point[0], p1l1[0], p1l1[1], p2l1[0], p2l1[1]) and point[1] > line_eqy(
                                 point[0], p1l2[0], p1l2[1], p2l2[0], p2l2[1]):
                             i += 1
-                        if point[1] > line_eqy(point[0], p1l1[0], p1l1[1], p2l1[0], p2l1[1]) and point[1] < line_eqy(
+                        if line_eqy(point[0], p1l1[0], p1l1[1], p2l1[0], p2l1[1]) < point[1] < line_eqy(
                                 point[0], p1l2[0], p1l2[1], p2l2[0], p2l2[1]):
                             j += 1
-                        if point[1] < line_eqy(point[0], p1l1[0], p1l1[1], p2l1[0], p2l1[1]) and point[1] > line_eqy(
+                        if line_eqy(point[0], p1l1[0], p1l1[1], p2l1[0], p2l1[1]) > point[1] > line_eqy(
                                 point[0], p1l2[0], p1l2[1], p2l2[0], p2l2[1]):
                             k += 1
                         if point[1] < line_eqy(point[0], p1l1[0], p1l1[1], p2l1[0], p2l1[1]) and point[1] < line_eqy(
                                 point[0], p1l2[0], p1l2[1], p2l2[0], p2l2[1]):
                             l += 1
-                    n_sr = (i+j+k+l)/4
-                    rms = (0.25*((i-n_sr)**2+(j-n_sr)**2+(k-n_sr)**2+(l-n_sr)**2))**0.5
+                    n_sr = (i + j + k + l) / 4
+                    rms = (0.25 * ((i - n_sr) ** 2 + (j - n_sr) ** 2 + (k - n_sr) ** 2 + (l - n_sr) ** 2)) ** 0.5
                     rms_lines.append((rms, p1l1, p2l1, p1l2, p2l2))
+        n += 1
+        pb['value'] = n
+        pb.update()
     line = min(rms_lines, key=lambda x: x[0])
     line_draw(line[1][0], line[1][1],
               line[2][0], line[2][1])
     line_draw(line[3][0], line[3][1],
               line[4][0], line[4][1])
+    pb['value'] = 0
+    pb.update()
+    flag_list.clear()
+    showinfo('Внимание!', 'Прямые построены')
+
 
 def lines_del():
     if lines_ids:
@@ -174,8 +197,12 @@ second_menu.add_command(label='Очистить прямые', command=lines_del
 width, height = 500, 500
 canv = tk.Canvas(root, width=width, height=height, bg='grey90')
 canv.bind('<Button-1>', _add_point)
-canv.pack()
+canv.bind('<Button-3>', del_point)
+canv.pack(side=tk.TOP)
+pb = ttk.Progressbar(root, orient='horizontal', mode='determinate', length=290)
+pb.pack(fill=tk.X)
 lines_ids = []
 point_list = []
+flag_list = []
 
 root.mainloop()
