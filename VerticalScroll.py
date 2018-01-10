@@ -61,9 +61,9 @@ class ScrollableFrame(ttk.Frame):
         self.update()
 
     def _on_mousewheel(self, event):
-        if event.num == 4 or event.keycode == 111:
+        if event.num == 4 or event.keysym == 'Up':
             self.canvas.yview_scroll(-1, "units")
-        elif event.num == 5 or event.keycode == 116:
+        elif event.num == 5 or event.keysym == 'Down':
             self.canvas.yview_scroll(1, "units")
         else:
             self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
