@@ -48,18 +48,22 @@ class ScrollableFrame(ttk.Frame):
         self.parent.bind_all("<MouseWheel>", self._on_mousewheel)
         self.parent.bind_all('<Button-4>', self._on_mousewheel)
         self.parent.bind_all('<Button-5>', self._on_mousewheel)
+        self.parent.bind_all('<Up>', self._on_mousewheel)
+        self.parent.bind_all('<Down>', self._on_mousewheel)
         self.update()
 
     def _unbound_to_mousewheel(self, event):
         self.parent.unbind_all("<MouseWheel>")
         self.parent.unbind_all('<Button-4>')
         self.parent.unbind_all('<Button-5>')
+        self.parent.unbind_all('<Up>')
+        self.parent.unbind_all('<Down>')
         self.update()
 
     def _on_mousewheel(self, event):
-        if event.num == 4:
+        if event.num == 4 or event.keycode == 111:
             self.canvas.yview_scroll(-1, "units")
-        elif event.num == 5:
+        elif event.num == 5 or event.keycode == 116:
             self.canvas.yview_scroll(1, "units")
         else:
             self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
