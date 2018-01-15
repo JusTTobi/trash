@@ -1,4 +1,4 @@
-
+from __future__ import print_function
 import scipy.stats as st
 import numpy as np
 from itertools import combinations
@@ -27,16 +27,16 @@ def anova_ext(*args, **kwargs):
     
     
     def _arcsine_trans(*args):
-        maxel = max([np.max(np.abs(x)) for x in args])
-        return [np.arcsin(np.asarray(x)/maxel) for x in args]
+        maxel = max(map(lambda x: np.max(np.abs(x)), args))
+        return map(lambda x: np.arcsin(np.asarray(x)/maxel), args)
     
     def _log_trans(*args):
-        minel = min([np.min(x) for x in args])
-        return [np.log(np.asarray(x) - minel + 1.0) for x in args]
+        minel = min(map(lambda x: np.min(x), args))
+        return map(lambda x: np.log(np.asarray(x) - minel + 1.0), args)
         
     def _sqrt_trans(*args):
-        minel = min([np.min(x) for x in args])
-        return [np.sqrt(np.asarray(x) - minel + 1.0) for x in args]
+        minel = min(map(lambda x: np.min(x), args))
+        return map(lambda x: np.sqrt(np.asarray(x) - minel + 1.0), args)
     
     def _identity_trans(*args): return args
         
@@ -50,7 +50,7 @@ def anova_ext(*args, **kwargs):
                          ('log', _log_trans),
                          ('sqrt', _sqrt_trans)]
     else:
-        if 'identity' not in [x[1] for x in transformations]:
+        if 'identity' not in map(lambda x:x[1], transformations):
             transformations = [('identity', lambda x: x)] + kwargs['transformations']
         else:
             transformations = kwargs['transformations']
@@ -124,6 +124,6 @@ if __name__ == '__main__':
     print('Applying extended anova scheme to 3 u.d. samples:', anova_ext(a,b,c))
     
     # Crazy samples...
-    a, b, c = [23,3,1,2,3,2,1], list(range(1000)), np.linspace(20, 30, 100)
+    a, b, c = [23,3,1,2,3,2,1], range(1000), np.linspace(20, 30, 100)
     print('Applying extended anova scheme to 3 "crazy" samples:', anova_ext(a,b,c))
  
