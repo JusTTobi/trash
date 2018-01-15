@@ -1,12 +1,13 @@
-from __future__ import print_function
-import scipy.stats as st
-import numpy as np
+#!/usr/bin/python3
 from itertools import combinations
+
+import numpy as np
+import scipy.stats as st
 
 
 def anova_ext(*args, **kwargs):
-    '''Extended anova algorithm.
-    
+    """Extended anova algorithm.
+
     Parameters
     ----------
         arg1, arg2, ..., argn -- samples to be compared;
@@ -23,38 +24,38 @@ def anova_ext(*args, **kwargs):
         equal or unequal (result of checking for equalness of variances)
         name of transformation used
         )
-    '''
-    
-    
+    """
+
     def _arcsine_trans(*args):
-        maxel = max(map(lambda x: np.max(np.abs(x)), args))
-        return map(lambda x: np.arcsin(np.asarray(x)/maxel), args)
-    
+        maxel = max([np.max(np.abs(x)) for x in args])
+        return [np.arcsin(np.asarray(x) / maxel) for x in args]
+
     def _log_trans(*args):
-        minel = min(map(lambda x: np.min(x), args))
-        return map(lambda x: np.log(np.asarray(x) - minel + 1.0), args)
-        
+        minel = min([np.min(x) for x in args])
+        return [np.log(np.asarray(x) - minel + 1.0) for x in args]
+
     def _sqrt_trans(*args):
-        minel = min(map(lambda x: np.min(x), args))
-        return map(lambda x: np.sqrt(np.asarray(x) - minel + 1.0), args)
-    
-    def _identity_trans(*args): return args
-        
+        minel = min([np.min(x) for x in args])
+        return [np.sqrt(np.asarray(x) - minel + 1.0) for x in args]
+
+    def _identity_trans(*args):
+        return args
+
     if 'alpha' not in kwargs:
         alpha = 0.05
-    else: 
+    else:
         alpha = kwargs['alpha']
     if 'transformations' not in kwargs:
         transformations = [('identity', _identity_trans),
-                         ('arcsine', _arcsine_trans),
-                         ('log', _log_trans),
-                         ('sqrt', _sqrt_trans)]
+                           ('arcsine', _arcsine_trans),
+                           ('log', _log_trans),
+                           ('sqrt', _sqrt_trans)]
     else:
-        if 'identity' not in map(lambda x:x[1], transformations):
+        if 'identity' not in [x[1] for x in transformations]:
             transformations = [('identity', lambda x: x)] + kwargs['transformations']
         else:
             transformations = kwargs['transformations']
-    
+
     def _check_normality(*args):
         for arg in args:
             if st.shapiro(arg)[1] < alpha:
@@ -63,7 +64,7 @@ def anova_ext(*args, **kwargs):
 
     def _check_variance_equality_normal(*args):
         return st.bartlett(*args)[1] > alpha
-    
+
     def _check_variance_equality_nonnormal(*args):
         return st.levene(*args)[1] > alpha
 
@@ -92,7 +93,7 @@ def anova_ext(*args, **kwargs):
     if 1 in priorities:
         data = dtuple[priorities.index(1)]
         fstat, pval = st.f_oneway(*data[1])
-        return (fstat, pval, 'fisher', 'normal', 'equal', data[0])
+        return fstat, pval, 'fisher', 'normal', 'equal', data[0]
     elif 2 in priorities:
         data = dtuple[priorities.index(2)]
         _pval = 1.0
@@ -102,28 +103,26 @@ def anova_ext(*args, **kwargs):
             if _pval > pval:
                 _pval = pval
                 _fstat = fstat
-        return (_fstat, _pval, 'welch-paired', 'normal', 'unequal', 'identity')
+        return _fstat, _pval, 'welch-paired', 'normal', 'unequal', 'identity'
     elif 3 in priorities:
         data = dtuple[priorities.index(3)]
         fstat, pval = st.f_oneway(*data[1])
-        return (fstat, pval, 'fisher', 'nonnormal', 'equal', data[0])
+        return fstat, pval, 'fisher', 'nonnormal', 'equal', data[0]
     elif 4 in priorities:
         data = dtuple[priorities.index(4)]
         fstat, pval = st.kruskal(*data[1])
-        return (fstat, pval, 'kruskal', 'nonnormal', 'unequal', data[0])
+        return fstat, pval, 'kruskal', 'nonnormal', 'unequal', data[0]
 
 
 if __name__ == '__main__':
-    
     # three normally distributed samples
     a, b, c = np.random.randn(100), np.random.randn(100), np.random.randn(100)
-    print('Applying extended anova scheme to 3 n.d. samples:', anova_ext(a,b,c))
+    print('Applying extended anova scheme to 3 n.d. samples:', anova_ext(a, b, c))
 
     # We still use Fisher test... dut to its stability
     a, b, c = np.random.rand(200), np.random.rand(100), np.random.rand(300)
-    print('Applying extended anova scheme to 3 u.d. samples:', anova_ext(a,b,c))
-    
+    print('Applying extended anova scheme to 3 u.d. samples:', anova_ext(a, b, c))
+
     # Crazy samples...
-    a, b, c = [23,3,1,2,3,2,1], range(1000), np.linspace(20, 30, 100)
-    print('Applying extended anova scheme to 3 "crazy" samples:', anova_ext(a,b,c))
- 
+    a, b, c = [23, 3, 1, 2, 3, 2, 1], list(range(1000)), np.linspace(20, 30, 100)
+    print('Applying extended anova scheme to 3 "crazy" samples:', anova_ext(a, b, c))
