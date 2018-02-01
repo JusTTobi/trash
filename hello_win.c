@@ -4,7 +4,7 @@
 typedef BOOL (WINAPI *SETCONSOLEFONT)(HANDLE, DWORD);
 SETCONSOLEFONT SetConsoleFont;
 
-void main(){
+int main(){
   HMODULE hmod = GetModuleHandleA("KERNEL32.DLL");
   SetConsoleFont =(SETCONSOLEFONT) GetProcAddress(hmod, "SetConsoleFont");
   SetConsoleFont(GetStdHandle(STD_OUTPUT_HANDLE), 8);
@@ -12,4 +12,5 @@ void main(){
   SetConsoleOutputCP(1251);
   printf("Привет Мир!\nВот такая фигня нужна, чтобы вывести текст на русском языке в консоле Wndows :-)\n");
   getchar();
+  return 0;
 }
