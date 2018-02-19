@@ -16,14 +16,17 @@ int main()
         printf("%lc\n", string[i]);
     }
 //    system("pause");
-    for (int i = 0, l = wcslen(string); i < l / 2; i++) {
-		wchar_t c = string[i];
-		string[i] = string[l - i - 1];
-		string[l - i - 1] = c;
-	}
+    for (int i = 0, l = wcslen(string); i < l / 2; i++)
+    {
+        wchar_t c = string[i];
+        string[i] = string[l - i - 1];
+        string[l - i - 1] = c;
+    }
     printf("%ls\n", string);
+    for (int i = 0; string[i] != '\0'; i++ )
+    {
+        printf("%lc\n", string[i]);
+    }
     return 0;
 
 }
-
-
