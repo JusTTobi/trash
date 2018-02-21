@@ -36,4 +36,15 @@ def sum_lt(L):
 
 print(sum_lt(L))
 
+
+def fib(n):
+    if n < 2:
+        return n
+    else:
+        return fib(n - 1) + fib(n - 2)
+
+
+print(fib(6))
+
+
 input()
