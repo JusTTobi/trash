@@ -145,13 +145,18 @@ cart * getcart(int * n)
         printf("Введите Фамилию: ");
         scanf("%s", (p+(*n))->fam);
         printf("Введите пол (m/f): ");
-        scanf("%*c%c", &((p+(*n))->sex));
+        char ansv;
+        do {
+            ansv = getchar();
+        } while (ansv == '\n' || ansv == ' ' || ansv == '\r' );
+        (p+(*n))->sex = ansv;
         printf("Введите возраст: ");
         scanf("%d", &((p+(*n))->age));
         (*n)++;
         printf("Ещё карточка? (y): ");
-        char ansv = 'n';
-        scanf("%*c%c%", &ansv);
+        do {
+            ansv = getchar();
+        } while (ansv == '\n' || ansv == ' ' || ansv == '\r' );
         if (ansv != 'y')
             break;
     }
@@ -385,7 +390,11 @@ cart * addcart(cart * p, int * n)
     printf("Введите Фамилию: ");
     scanf("%s", (p+(*n))->fam);
     printf("Введите пол (m/f): ");
-    scanf("%*c%c", &((p+(*n))->sex));
+    char ansv;
+    do {
+        ansv = getchar();
+    } while (ansv == '\n' || ansv == ' ' || ansv == '\r' );
+    (p+(*n))->sex = ansv;
     printf("Введите возраст: ");
     scanf("%d", &((p+(*n))->age));
     (*n)++;
