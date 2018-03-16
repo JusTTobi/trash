@@ -16,5 +16,5 @@ def progress2(start, n, step):
         i+=1
     return start
 
-print(progress2(2, 1000, 2))
+print(progress2(2, 100000, 2))
 
